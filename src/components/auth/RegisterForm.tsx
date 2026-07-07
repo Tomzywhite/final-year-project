@@ -96,10 +96,11 @@ export default function RegisterForm() {
 
     const supabase = createClient()
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         // These values are picked up by the handle_new_user DB trigger
         data: {
           full_name: formData.full_name,
@@ -116,13 +117,19 @@ export default function RegisterForm() {
           'An account with this email already exists. Please sign in instead.'
         )
       } else {
-        setServerError('Registration failed. Please try again later.')
+        setServerError(`Registration failed: ${error.message}`)
       }
       setLoading(false)
       return
     }
 
-    setSuccess(true)
+    if (data?.session) {
+      // If email confirmation is disabled, we get an active session immediately.
+      // Redirect to home/dashboard page.
+      window.location.href = '/'
+    } else {
+      setSuccess(true)
+    }
     setLoading(false)
   }
 

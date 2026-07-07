@@ -1,12 +1,5 @@
 import type { Metadata } from 'next'
-import { Outfit } from 'next/font/google'
 import './globals.css'
-
-const outfit = Outfit({ 
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-outfit',
-})
 
 export const metadata: Metadata = {
   title: {
@@ -23,7 +16,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} antialiased`}>
+    <html lang="en" className="antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
+      </head>
       <body className="font-sans animate-in fade-in duration-500">{children}</body>
     </html>
   )

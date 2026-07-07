@@ -17,7 +17,7 @@ interface NotificationBellProps {
 
 export function NotificationBell({ initialNotifications, userId, role }: NotificationBellProps) {
   const router = useRouter()
-  const supabase = createClient()
+  const [supabase] = React.useState(() => createClient())
   const [notifications, setNotifications] = React.useState<Notification[]>(initialNotifications)
   const [open, setOpen] = React.useState(false)
   const [marking, setMarking] = React.useState(false)
@@ -27,8 +27,10 @@ export function NotificationBell({ initialNotifications, userId, role }: Notific
 
   // Real-time subscription
   React.useEffect(() => {
+    // Generate a unique channel name to prevent StrictMode/re-mount conflicts
+    const channelId = `notifications:${userId}:${Math.random().toString(36).slice(2, 9)}`
     const channel = supabase
-      .channel(`notifications:${userId}`)
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -43,7 +45,9 @@ export function NotificationBell({ initialNotifications, userId, role }: Notific
       )
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [userId, supabase])
 
   // Close on outside click

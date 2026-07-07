@@ -10,7 +10,7 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // If already authenticated, redirect to their dashboard, otherwise render landing page Let middleware handle the role-based auth redirect
+  // If already authenticated, redirect to their dashboard, otherwise render landing page. Let proxy handle the role-based auth redirect.
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')

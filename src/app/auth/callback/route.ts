@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 
     if (!error) {
       // After Microsoft login, redirect them to the main app.
-      // The middleware will assess their role and send them to the right portal.
+      // The proxy will assess their role and send them to the right portal.
       return NextResponse.redirect(`${origin}${next}`)
     }
   }

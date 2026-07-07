@@ -51,7 +51,7 @@ export default function LoginForm() {
         return
       }
 
-      // Force a hard navigation to ensure cookies are read freshly by the middleware
+      // Force a hard navigation to ensure cookies are read freshly by the proxy
       window.location.href = '/'
     } else {
       // Magic Link Login

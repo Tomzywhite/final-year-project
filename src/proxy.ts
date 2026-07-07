@@ -7,7 +7,7 @@ const PUBLIC_ROUTES = ['/', '/login', '/register', '/unauthorized', '/privacy', 
 // Routes that redirect logged-in users away (no point visiting login when signed in)
 const AUTH_ROUTES = ['/login', '/register']
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Build a response object we can attach cookies to
