@@ -26,16 +26,21 @@ export async function getProfile(
 export async function getCurrentUserWithProfile(
   supabase: SupabaseClient
 ): Promise<{ userId: string; profile: Profile } | null> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  if (!user) return null
+    if (!user) return null
 
-  const profile = await getProfile(supabase, user.id)
-  if (!profile) return null
+    const profile = await getProfile(supabase, user.id)
+    if (!profile) return null
 
-  return { userId: user.id, profile }
+    return { userId: user.id, profile }
+  } catch (error) {
+    console.error('Error in getCurrentUserWithProfile:', error)
+    return null
+  }
 }
 
 /**

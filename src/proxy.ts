@@ -35,9 +35,37 @@ export default async function proxy(request: NextRequest) {
   )
 
   // IMPORTANT: Do not run any logic between createServerClient and getUser()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error) {
+      console.warn('Supabase auth error in proxy:', error.message)
+      if (
+        error.status === 400 ||
+        error.code === 'refresh_token_not_found' ||
+        error.message?.toLowerCase().includes('refresh token')
+      ) {
+        // Clear all Supabase auth cookies to prevent infinite refresh errors
+        const cookieNames = request.cookies.getAll().map((c) => c.name)
+        cookieNames.forEach((name) => {
+          if (name.startsWith('sb-')) {
+            request.cookies.delete(name)
+          }
+        })
+        supabaseResponse = NextResponse.next({ request })
+        cookieNames.forEach((name) => {
+          if (name.startsWith('sb-')) {
+            supabaseResponse.cookies.delete(name)
+          }
+        })
+      }
+    } else {
+      user = data?.user
+    }
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err)
+    console.error('Unexpected error during getUser in proxy:', errMsg)
+  }
 
   // ── No session ────────────────────────────────────────────────────────────
   if (!user) {
